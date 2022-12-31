@@ -23,17 +23,25 @@ namespace VNEagleEngine.PlayerController
 
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField] private float _jumpForce = 5f;
+        [SerializeField] private float _jumpForce = 9f;
         [SerializeField] private float _moveSpeed = 6.5f;
         [SerializeField] private float _accelerateSpeed = 12f;
         [SerializeField] private float _deccelerateSpeed = 12f;
 
+        [Header("Gravity Infomation")]
+        [SerializeField] private float _initGravityScale = 2.0f;
+
+        [Space]
+        [Header("Controller Components")]
+        [SerializeField] private PlayerTriggerBottom _triggerGroundController;
+
         private Rigidbody2D _rig2d;
+        private PlayerState _playerState;
         //private ePlayerState _currentState = ePlayerState.IDLE;
 
         private void Awake()
         {
-            _rig2d = GetComponent<Rigidbody2D>();
+            Init();
         }
 
         private void Update()
@@ -41,31 +49,70 @@ namespace VNEagleEngine.PlayerController
             if (Input.GetButtonDown("Jump"))
             {
                 Jump();
-
             }
         }
 
         private void FixedUpdate()
         {
             Move();
+            AddForceWhenFall();
+        }
+
+        private void Init()
+        {
+            _rig2d = GetComponent<Rigidbody2D>();
+
+            _triggerGroundController.Init(this);
+
+            _playerState = new PlayerState();
+            _rig2d.gravityScale = _initGravityScale;
         }
 
         // public void SetState(ePlayerState playerState) => _currentState = playerState;
 
-        public void Jump()
+        private void Jump()
         {
+            _playerState.IsJumping = true;
             _rig2d.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
         }
 
-        public void Move()
+        private void Move()
         {
             float rawAxis = Input.GetAxisRaw("Horizontal");
             float targetSpeed = rawAxis * _moveSpeed;
             float diffSpeed = targetSpeed - _rig2d.velocity.x;
+
+            if (diffSpeed == 0) return;
+
             float accelRate = Mathf.Abs(targetSpeed) > 0.01f ? _accelerateSpeed : _deccelerateSpeed;
             float movement = diffSpeed * accelRate;
 
             _rig2d.AddForce(movement * Vector2.right);
+        }
+
+        private void AddForceWhenFall()
+        {
+            if (_rig2d.velocity.y < 0 || _playerState.IsJumping)
+            {
+            }
+        }
+
+        public void OnDetectGround()
+        {
+            _playerState.IsJumping = false;
+            _playerState.IsGround = true;
+        }
+    }
+
+    public class PlayerState
+    {
+        public bool IsJumping;
+        public bool IsGround;
+
+        public PlayerState()
+        {
+            IsJumping = false;
+            IsGround = false;
         }
     }
 }
