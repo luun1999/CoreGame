@@ -8,16 +8,30 @@ namespace VNEagleEngine.PlayerController
     {
         private PlayerController _playerController;
 
-        private void OnCollisionEnter2D(Collision2D collision)
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+             if (!collision.gameObject.CompareTag("Ground") || _playerController == null) return;
+
+            _playerController.OnDetectGround();
+        }
+
+        private void OnTriggerStay2D(Collider2D collision)
         {
             if (!collision.gameObject.CompareTag("Ground") || _playerController == null) return;
 
-             
+            _playerController.OnDetectGround();
+        }
+
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            if (!collision.gameObject.CompareTag("Ground") || _playerController == null) return;
+
+            _playerController.OnLeaveGround();
         }
 
         public void Init(PlayerController playerController)
         {
-            this._playerController = playerController;
+            _playerController = playerController;
         }
     }
 }

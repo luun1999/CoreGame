@@ -46,7 +46,7 @@ namespace VNEagleEngine.PlayerController
 
         private void Update()
         {
-            if (Input.GetButtonDown("Jump"))
+            if (Input.GetButtonDown("Jump") && _playerState.IsGround)
             {
                 Jump();
             }
@@ -102,6 +102,11 @@ namespace VNEagleEngine.PlayerController
             _playerState.IsJumping = false;
             _playerState.IsGround = true;
         }
+
+        public void OnLeaveGround()
+        {
+            _playerState.IsGround = false;
+        }
     }
 
     public class PlayerState
@@ -112,7 +117,7 @@ namespace VNEagleEngine.PlayerController
         public PlayerState()
         {
             IsJumping = false;
-            IsGround = false;
+            IsGround = true;
         }
     }
 }
