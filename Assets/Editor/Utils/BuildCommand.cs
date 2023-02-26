@@ -20,13 +20,13 @@ public static class BuildCommand
 
     public static string GetBuildPath(BuildTarget buildTarget)
     {
-        string basePath = Application.dataPath + "/_build";
+        string basePath = Path.GetFullPath(".") + "/_build";
 
         if (buildTarget.ToString().ToLower().Contains("windows"))
         {
             string path = basePath + "/windows";
             if (!File.Exists(path))
-                File.Create(path);
+                Directory.CreateDirectory(path);
 
             return path + "/" + GetBuildName(buildTarget) + ".exe";
         }
@@ -36,7 +36,7 @@ public static class BuildCommand
 
     public static string GetBuildName(BuildTarget buildTarget)
     {
-        string buildName = GAME_NAME + buildTarget.ToString();
+        string buildName = GAME_NAME;
         return buildName;
     }
 
